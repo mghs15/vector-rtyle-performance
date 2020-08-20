@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>Display a map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+<style>
+body { margin:0; padding:0; }
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+#menu {
+    position: absolute;
+    left:  0.5em;
+    top: 0.5em; 
+    padding: 0.2em 0.5em;
+    margin: 0 0;
+    background: #eeeeee;
+    box-shadow: 0px 0px 0px 5px #eeeeee;
+    border: dashed 3px #dddddd;
+    font-family: 'Open Sans', sans-serif;
+    max-height: 90%;
+    overflow: auto;
+}
+div.colorselect {
+  margin: 5px 0px 5px 0px;
+
+}
+button.local {
+  display: block;
+  text-align:center;
+  background: #dddddd;
+  padding 0 0.5em 0 0.5em;
+  border: solid 2px #ddd;
+  border-radius: 3px;
+  margin: 0px 0px 5px 0px;
+  line-height: 1.5em;
+  font-size: 1em;
+  width: 100%;
+}
+#download {
+  display: block;
+  text-align:center;
+  background: #dddddd;
+  padding 0 0.5em 0 0.5em;
+  border: solid 2px #ddd;
+  border-radius: 3px;
+  margin: 0px 0px 5px 0px;
+  line-height: 1.5em;
+  font-size: 1em;
+  width: 100%;
+}
+
+</style>
+</head>
+<body>
+
+
+<div id='map'></div>
+<div id='menu'>
+  <div>
+  <button type="button" class="local" name="monochrome" onclick="action()" >生成</button>
+  </div>
+  <div><a id="download">ダウンロード</a></div>
+</div>
+
+<script>
+
+/*************************************************/
+/*ボタンごとの処理                               */
+/*************************************************/
+
+//最初にロードしたスタイルをベースに色の変換を行う。
+var action = function(){
+
+    
+    var styleres = {
+        "version": 8,
+        "name": "Vector",
+        "metadata": {},
+        "sprite": "https://cyberjapandata.gsi.go.jp/vector/sprite/pale",
+        "glyphs": "https://cyberjapandata.gsi.go.jp/xyz/noto-jp/{fontstack}/{range}.pbf",
+        "sources": {
+            "gsibv-vectortile-source-1-4-16": {
+                "type": "vector",
+                "tiles": [
+                    "https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{z}/{x}/{y}.pbf"
+                ],
+                "maxzoom": 11,
+                "minzoom": 4,
+                "attribution": "<a href='https://maps.gsi.go.jp/vector/' target='_blank'>地理院地図Vector（仮称）</a>"
+            }
+        },
+        "layers": []
+    };
+    
+    
+    for(var i=0; i < 10000; i++){
+        var style = {
+            "id": "layer-no-" + i,
+            "type": "line",
+            "source": "gsibv-vectortile-source-1-4-16",
+            "source-layer": "road",
+            "filter": ["has", "ftCode"],
+            "layout": {},
+            "paint": {
+                "line-color": "rgba(0,0,255,1)",
+                "line-width": 1
+            }
+        };
+        
+        styleres.layers.push(style);
+        
+    }
+    
+    //作成したスタイルダウンロード準備
+    var stylejson = JSON.stringify(styleres, null, "\t");
+    setdownload(stylejson); //ダウンロード準備
+    console.log("完了");
+   
+}
+
+/*************************************************/
+/*ダウンロードの処理                               */
+/*************************************************/
+//stylejsonはJSON形式を保った文字列
+var setdownload = function(stylejson){
+      var blob = new Blob([stylejson], {type: 'application\/json'});
+      var url = URL.createObjectURL(blob);
+      const a = document.getElementById('download');
+      a.href = window.URL.createObjectURL(blob);
+      a.download = "many-style" + "" + ".json";
+}
+
+
+
+</script>
+ 
+</body>
+</html>
