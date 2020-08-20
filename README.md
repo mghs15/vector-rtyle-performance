@@ -1,2 +1,2 @@
-# vector-rtyle-performance
+# vector-style-performance
 スタイルのパフォーマンスを調べる実験
