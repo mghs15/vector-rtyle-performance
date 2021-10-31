@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<title>Display a map</title>
+<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.js'></script>
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.2/mapbox-gl.css' rel='stylesheet' />
+<style>
+body { margin:0; padding:0; }
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+#menu {
+    position: absolute;
+    left:  0.5em;
+    top: 0.5em; 
+    padding: 0.2em 0.5em;
+    margin: 0 0;
+    background: #eeeeee;
+    box-shadow: 0px 0px 0px 5px #eeeeee;
+    border: dashed 3px #dddddd;
+    font-family: 'Open Sans', sans-serif;
+    max-height: 90%;
+    overflow: auto;
+}
+div.colorselect {
+  margin: 5px 0px 5px 0px;
+
+}
+button.local {
+  display: block;
+  text-align:center;
+  background: #dddddd;
+  padding 0 0.5em 0 0.5em;
+  border: solid 2px #ddd;
+  border-radius: 3px;
+  margin: 0px 0px 5px 0px;
+  line-height: 1.5em;
+  font-size: 1em;
+  width: 100%;
+}
+#download {
+  display: block;
+  text-align:center;
+  background: #dddddd;
+  padding 0 0.5em 0 0.5em;
+  border: solid 2px #ddd;
+  border-radius: 3px;
+  margin: 0px 0px 5px 0px;
+  line-height: 1.5em;
+  font-size: 1em;
+  width: 100%;
+}
+
+</style>
+</head>
+<body>
+
+
+<div id='map'></div>
+
+
+<script>
+
+
+
+var styleres = {
+    "version": 8,
+    "name": "Vector",
+    "metadata": {},
+    "sprite": "https://cyberjapandata.gsi.go.jp/vector/sprite/pale",
+    "glyphs": "https://cyberjapandata.gsi.go.jp/xyz/noto-jp/{fontstack}/{range}.pbf",
+    "sources": {
+        "test": {
+            "type": "geojson",
+            "data": {
+              "type": "FeatureCollection",
+              "features": []
+            }
+        }
+    },
+    "layers": []
+};
+
+
+for(var i=0; i < 10000; i++){
+    const geo = {
+              "type": "Feature",
+              "properties": {
+                "test": 1
+              },
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  135 + Math.random(),
+                  35 + Math.random()
+                ]
+              }
+            };
+            
+     styleres.sources.test.data.features.push(geo);
+}
+
+
+
+for(var i=0; i < 1; i++){
+    var style = {
+        "id": "layer-no-" + i,
+        "type": "circle",
+        "source": "test",
+        "filter": ["has", "test"],
+        "layout": {},
+        "paint": {
+            "circle-color": "rgba(0,0,255,1)",
+            "circle-radius": 5
+        }
+    };
+    
+    styleres.layers.push(style);
+    
+}
+
+
+
+
+
+
+/*************************************************/
+/*Mapbox 関係設定                                */
+/*************************************************/
+
+	
+var start = performance.now();
+
+var map = new mapboxgl.Map({
+  container: 'map', // container id
+  hash: true, //add #position on URL
+  style: styleres, // stylesheet location
+  center: [135.5, 35.5], // starting position [lng, lat]
+  zoom: 10, // starting zoom
+  minZoom:4,
+  maxZoom: 17.99,
+  localIdeographFontFamily: ['MS Gothic', 'Hiragino Kaku Gothic Pro', 'sans-serif']
+});
+
+
+map.on("load", function(){
+  var end = performance.now();
+
+  var time = end - start;
+
+  console.log(time + " ミリ秒");
+
+});
+
+</script>
+ 
+</body>
+</html>
